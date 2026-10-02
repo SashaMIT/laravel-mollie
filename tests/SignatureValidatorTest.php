@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Mollie\Api\Webhooks\SignatureValidator as BaseSignatureValidator;
 use Mollie\Laravel\SignatureValidator;
 use PHPUnit\Framework\Attributes\Test;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class SignatureValidatorTest extends TestCase
 {
@@ -30,7 +31,8 @@ class SignatureValidatorTest extends TestCase
         $request = $this->createRequest('{"id":"payment_123"}');
         $validator = new SignatureValidator(new BaseSignatureValidator('valid_secret'));
 
-        $this->expectException(\Symfony\Component\HttpKernel\Exception\HttpException::class);
+        $this->expectException(HttpException::class);
+        $this->expectExceptionMessage('Invalid webhook signature');
 
         $validator->validate($request);
     }

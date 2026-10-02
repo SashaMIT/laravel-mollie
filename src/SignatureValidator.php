@@ -23,16 +23,14 @@ class SignatureValidator
         $signatures = $request->header(BaseSignatureValidator::SIGNATURE_HEADER, '');
 
         try {
-            $valid = $this->validator->validatePayload(
+            if ($this->validator->validatePayload(
                 $body,
                 $signatures
-            );
+            ) !== true) {
+                abort(401, 'Invalid webhook signature');
+            }
         } catch (InvalidSignatureException $e) {
             $this->marshalInvalidSignatureException($e);
-        }
-
-        if ($valid !== true) {
-            abort(401, 'Invalid webhook signature');
         }
 
         return $this;
